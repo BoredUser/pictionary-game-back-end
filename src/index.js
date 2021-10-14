@@ -1,30 +1,40 @@
 // require( './data/' );
 
-const io = require("socket.io")((3000), { cors: true });
+require( './data/init' );
 
-let drawing;
-io.on("connection", socket => {
+const express = require( 'express' );
+const path = require( 'path' );
+const cors = require( 'cors' );
 
-    socket.on("join-room", (room) => {
-		socket.join(room);
-		socket.emit("joined");
-        socket.emit("drawing", drawing);
-	});
+const app = express();
 
-	socket.on("drawing", (data) => {
-        if (data.action === "draw"){
-            drawing = data.data;
-            socket.to(data.room).emit("drawing", data.data);
-        }
-        else if(data.action === "clear"){
-            drawing = null;
-            socket.to(data.room).emit("clear");
-        }
-		
-	});
 
-    socket.on("checkAnswer", (data) =>{
-        console.log(data);
-    });
-    
+// middlewares
+
+app.use( cors() );
+app.use( express.urlencoded( { extended: false } ) );
+app.use( express.json() );
+
+
+const PORT = process.env.PORT || 3000;
+
+app.listen( PORT, error => {
+    if( error ) {
+        console.error( error.message );
+        return;
+    }
+
+    console.log( `Check http://localhost:${PORT}` );
 });
+
+require ('./socket/index');
+
+
+
+
+
+
+
+
+
+
