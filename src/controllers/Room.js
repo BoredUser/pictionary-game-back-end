@@ -29,7 +29,7 @@ class Room {
 		console.log("CREATED GAME");
 	}
 
-	async joinRoom(data) {
+	joinRoom(data) {
 		const { io, socket } = this;
 		const roomID = data.id;
 		const players = Array.from(await io.in(roomID).allSockets());
@@ -53,7 +53,7 @@ class Room {
 		console.log("JOINED GAME");
 	}
 
-	async getRoomPlayers(data) {
+	getRoomPlayers(data) {
 		const { io, socket } = this;
 		if (games[data.id] !== undefined) {
             console.log(games[data.id]);
@@ -65,7 +65,7 @@ class Room {
 		console.log("GET PLAYERS");
 	}
 
-	async getPublicRooms(data) {
+	getPublicRooms(data) {
 		const { io } = this;
 		let publicGames = [];
 		for (const key in games) {
@@ -77,7 +77,7 @@ class Room {
 		io.to(data.id).emit(EVENTS.GET_ROOMS, { games: publicGames });
 	}
 
-	async setCustomId(data) {
+	setCustomId(data) {
         const { socket } = this;
 		customSocketIds[data.customId] = data.id;
 		for (const key in games) {
