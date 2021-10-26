@@ -33,7 +33,7 @@ class Room {
 				publicGames.push({ gameName: game.name, key: key });
 			}
 		}
-		io.to('/').emit(EVENTS.GET_ROOMS, { games: publicGames });
+		io.of('/').emit(EVENTS.GET_ROOMS, { games: publicGames });
 		console.log("CREATED GAME");
 	}
 
