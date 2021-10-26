@@ -29,7 +29,7 @@ class Room {
 		console.log("CREATED GAME");
 	}
 
-	joinRoom(data) {
+	async joinRoom(data) {
 		const { io, socket } = this;
 		const roomID = data.id;
 		const players = Array.from(await io.in(roomID).allSockets());
