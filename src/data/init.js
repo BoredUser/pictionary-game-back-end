@@ -13,8 +13,9 @@ if( process.env.NODE_ENVIRONMENT !== 'deployment' ) {
 } else {
     console.log( "password: ", process.env.DB_PASSWORD );
     console.log( "Username: ", process.env.DB_USER );
-    const connection = `mongodb+srv://${process.env.DB_USER}:/${process.env.DB_PASSWORD}@cluster0.nznal.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
-    mongoose.connect( connection );
+    const string = `mongodb+srv://rahulTambe:Qpalzmqm@cluster0.nznal.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
+    //const connection = `mongodb+srv://${process.env.DB_USER}:/${process.env.DB_PASSWORD}@cluster0.nznal.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
+    mongoose.connect( string );
 }
 
 
