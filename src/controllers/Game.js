@@ -100,6 +100,8 @@ class Game {
 		const { io, socket } = this;
 		const guess = data.message.toLowerCase().trim();
 		if (guess === '') return;
+		console.log("Onmessage Games:", games);
+		console.log("Onmessage Rooms:", games[socket.roomID]);
 		const currentWord = games[socket.roomID].currentWord.toLowerCase();
 		const distance = leven(guess, currentWord);
 		if (distance === 0 && currentWord !== '') {
