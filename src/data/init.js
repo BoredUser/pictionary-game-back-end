@@ -1,19 +1,17 @@
-require('../models/User');
-require('../models/Turn');
-require('../models/Round');
-require('../models/Game');
+require( '../models/User' );
 
 const mongoose = require( 'mongoose' );
 
 mongoose.set( 'returnOriginal', false );
 mongoose.set( 'runValidators', true );
+// mongoose.set( 'useFindAndModify', false );
 
 // mongodb is the name of the service
 if( process.env.DOCKER === 'NO_DOCKER' ) {
-    console.log( 'Connecting to mongodb://localhost:27017/pictionaryGameDB' );
+    console.log( 'Connecting to mongodb://localhost:27017/workshopsDB' );
     mongoose.connect( 'mongodb://localhost:27017/pictionaryGameDB' );
 } else {
-    console.log( 'Connecting to mongodb://mongodb/pictionaryGameDB' );
+    console.log( 'Connecting to mongodb://mongodb/workshopsDB' );
     mongoose.connect( 'mongodb://mongodb/pictionaryGameDB' );
 }
 

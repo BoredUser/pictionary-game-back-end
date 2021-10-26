@@ -1,70 +1,44 @@
-// require( './data/' );
-
-require( './data/index' );
-
-const express = require( 'express' );
-const path = require( 'path' );
+require( './data/init' );
 const cors = require( 'cors' );
+const express = require('express')
+const app = new express();
+const sockets = require('./sockets');
+const constants = require('./utils/constants')
+const { EventEmitter } = require('events');
 
-const app = express();
-var http = require("http").createServer(app)
-var io = require("socket.io")(http, {  cors: {    origin: "*",    methods: ["GET", "POST"]  }})
+global.round = new EventEmitter();
+global.games = {};
+global.customSocketIds = {};
+global.BONUS = 250;
+global.MAX_POINTS = 500;
+global.EVENTS = constants.events
 
-// middlewares
+
+const authRouter = require( './routes/auth' );
+
+const logger = require( './middleware/logger' );
+const errorHandler = require( './middleware/error' );
+
 app.use( cors() );
+
+app.use( logger );
+
 app.use( express.urlencoded( { extended: false } ) );
+
 app.use( express.json() );
 
+app.use( '/auth', authRouter );
 
-const PORT = process.env.PORT || 3000;
+app.get('/test', (req, res) => {
+	res.json({ok: 'ok'})
+})
 
-// socket events 
 
-let drawing;
-io.on("connection", socket => {
+// generic error handler
+app.use( errorHandler );
 
-    socket.on("join-room", (room) => {
-		socket.join(room);
-		socket.emit("joined");
-        socket.emit("drawing", drawing);
-	});
-
-	socket.on("drawing", (data) => {
-        if (data.action === "draw"){
-            drawing = data.data;
-            socket.to(data.room).emit("drawing", data.data);
-        }
-        else if(data.action === "clear"){
-            drawing = null;
-            socket.to(data.room).emit("clear");
-        }
-		
-	});
-
-    socket.on("checkAnswer", (data) =>{
-        console.log(data);
-    });
-    
+const server = app.listen(3000, () => {
+	console.log(`Server listening on port 3000`);
 });
 
-
-http.listen( PORT, error => {
-    if( error ) {
-        console.error( error.message );
-        return;
-    }
-
-    console.log( `Check http://localhost:${PORT}` );
-});
-
-
-
-
-
-
-
-
-
-
-
-
+sockets.initialize(server);
