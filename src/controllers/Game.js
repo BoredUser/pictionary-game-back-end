@@ -42,7 +42,9 @@ class Game {
 		const { io, socket } = this;
 		const { rounds } = games[socket.roomID];
 		const players = Array.from(await io.in(socket.roomID).allSockets());
-		console.log(players, 'players')
+		console.log("___________________________");
+		console.log("Startgame Players: ",players);
+		console.log("___________________________");
 		socket.to(socket.roomID).emit(events.START_GAME);
 		for (let j = 0; j < rounds; j++) {
 			/* eslint-disable no-await-in-loop */
@@ -65,12 +67,15 @@ class Game {
 		this.resetGuessedFlag(players);
 		games[roomID].totalGuesses = 0;
 		games[roomID].currentWord = '';
-
+		console.log("___________________________");
+		console.log("GiveTurn to CutomIds: ",customSocketIds);
+		console.log("___________________________");
 		for (const customId in customSocketIds){
 			if (customSocketIds[customId] === player){
 				games[roomID].drawer = customId;
 				console.log("drawer:", games[roomID].drawer);
 			}
+
 		}
 
 		// games[roomID].drawer = player;
