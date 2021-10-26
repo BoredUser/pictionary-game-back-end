@@ -69,6 +69,7 @@ class Game {
 		for (const customId in customSocketIds){
 			if (customSocketIds[customId] === player){
 				games[roomID].drawer = customId;
+				console.log("drawer:", games[roomID].drawer);
 			}
 		}
 

@@ -7,13 +7,16 @@ mongoose.set( 'runValidators', true );
 // mongoose.set( 'useFindAndModify', false );
 
 // mongodb is the name of the service
-if( process.env.DOCKER === 'NO_DOCKER' ) {
+if( process.env.NODE_ENVIRONMENT !== 'deployment' ) {
     console.log( 'Connecting to mongodb://localhost:27017/workshopsDB' );
     mongoose.connect( 'mongodb://localhost:27017/pictionaryGameDB' );
 } else {
     console.log( 'Connecting to mongodb://mongodb/workshopsDB' );
-    mongoose.connect( 'mongodb://mongodb/pictionaryGameDB' );
+    const connection = `mongodb+srv://${process.env.DB_USERNAME}:/${process.env.DB_PASSWORD}@cluster0.nznal.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
+    mongoose.connect( connection );
 }
+
+
 
 mongoose.connection.on( 'connected', () => {
     console.log( 'connected' );
