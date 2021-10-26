@@ -50,6 +50,7 @@ class Game {
 				await this.giveTurnTo(players, i);
 			}
 		}
+		io.to(socket.id).emit(EVENTS.GET_SCORE, { scores: games[socket.roomID]["Players"] });
 		io.to(socket.roomID).emit(events.END_GAME, { stats: games[socket.roomID] });
 		delete games[socket.roomID];
 	}
@@ -64,7 +65,14 @@ class Game {
 		this.resetGuessedFlag(players);
 		games[roomID].totalGuesses = 0;
 		games[roomID].currentWord = '';
-		games[roomID].drawer = player;
+
+		for (const customId in customSocketIds){
+			if (customSocketIds[customId] === player){
+				games[roomID].drawer = customId;
+			}
+		}
+
+		// games[roomID].drawer = player;
 		// console.log("drawer>>>>>>>>>>>>>>>", drawer.to(roomID))
 		io.to(prevPlayer).emit(events.DISABLE_CANVAS);
 		drawer.to(roomID).broadcast.emit(events.CHOOSING_WORD, { name: drawer.player.name });
@@ -82,6 +90,11 @@ class Game {
 		}
 	}
 
+	getScore(data){
+		const { io, socket } = this;
+		io.to(socket.id).emit(EVENTS.GET_SCORE, { scores: games[socket.roomID]["Players"] });
+	}
+
 	onMessage(data) {
 		const { io, socket } = this;
 		const guess = data.message.toLowerCase().trim();
@@ -91,21 +104,23 @@ class Game {
 		if (distance === 0 && currentWord !== '') {
 				socket.emit(events.MESSAGE, { ...data, name: socket.player.name });
 				if (games[socket.roomID].drawer !== socket.id && !socket.hasGuessed) {
-						const drawer = io.of('/').sockets.get(games[socket.roomID].drawer);
+						// const drawer = io.of('/').sockets.get(games[socket.roomID].drawer);
 						const { startTime } = games[socket.roomID];
 						const roundTime = games[socket.roomID].time;
 						const roomSize = io.sockets.adapter.rooms.get(socket.roomID).size;
 						socket.emit(events.CORRECT_GUESS, { message: 'You guessed it right!', id: socket.id });
 						socket.broadcast.emit(events.CORRECT_GUESS, { message: `${socket.player.name} has guessed the word!`, id: socket.id });
+						
+
 						games[socket.roomID].totalGuesses++;
-						games[socket.roomID][socket.id].score += getScore(startTime, roundTime);
-						games[socket.roomID][drawer.id].score += BONUS;
-						io.in(socket.roomID).emit(events.UPDATE_SCORE, {
-								playerID: socket.id,
-								score: games[socket.roomID][socket.id].score,
-								drawerID: drawer.id,
-								drawerScore: games[socket.roomID][drawer.id].score,
-						});
+						games[socket.roomID]["Players"][data.id].score += getScore(startTime, roundTime);
+						games[socket.roomID]["Players"][games[socket.roomID].drawer].score += BONUS;
+						// io.in(socket.roomID).emit(events.UPDATE_SCORE, {
+						// 		playerID: socket.id,
+						// 		score: games[socket.roomID]["Players"][data.id].score,
+						// 		drawerID: games[socket.roomID].drawer,
+						// 		drawerScore: games[socket.roomID]["Players"][games[socket.roomID].drawer].score,
+						// });
 						if (games[socket.roomID].totalGuesses === roomSize - 1) {
 								round.emit('everybodyGuessed', { roomID: socket.roomID });
 						}

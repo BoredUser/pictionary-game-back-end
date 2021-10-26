@@ -23,5 +23,6 @@ exports.events = {
 	CREATED_ROOM: 'roomCreated',
 	GET_ROOMS: 'getRooms',
 	SET_CUSTOM_CLIENT_ID: 'clientAfterConnection',
-	GET_ROOM_PLAYERS: 'getPlayersInARoom'
+	GET_ROOM_PLAYERS: 'getPlayersInARoom',
+	GET_SCORE: 'getScore'
 }

@@ -22,6 +22,8 @@ module.exports.initialize = (server) => {
         socket.on(events.GET_PLAYERS, async (data) => { await new Game(io, socket).getPlayers(data); });
         socket.on(events.MESSAGE,  (data) => new Game(io, socket).onMessage(data));
         socket.on(events.GET_ROOM_PLAYERS, async (data) => { await new Room(io, socket).getRoomPlayers(data)});
+        socket.on(events.GET_SCORE, (data) => new Game(io, socket).getScore(data));
+        
         // socket.on('disconnect', () => new Disconnect(io, socket).onDisconnect());
     });
 };
