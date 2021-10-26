@@ -11,8 +11,9 @@ if( process.env.NODE_ENVIRONMENT !== 'deployment' ) {
     console.log( 'Connecting to mongodb://localhost:27017/workshopsDB' );
     mongoose.connect( 'mongodb://localhost:27017/pictionaryGameDB' );
 } else {
-    console.log( 'Connecting to mongodb://mongodb/workshopsDB' );
-    const connection = `mongodb+srv://${process.env.DB_USERNAME}:/${process.env.DB_PASSWORD}@cluster0.nznal.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
+    console.log( "password: ", process.env.DB_PASSWORD );
+    console.log( "Username: ", process.env.DB_USER );
+    const connection = `mongodb+srv://${process.env.DB_USER}:/${process.env.DB_PASSWORD}@cluster0.nznal.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
     mongoose.connect( connection );
 }
 
