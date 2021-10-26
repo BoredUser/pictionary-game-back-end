@@ -26,6 +26,14 @@ class Room {
 		socket.roomID = id;
 		socket.join(id);
 		io.to(socket.id).emit(EVENTS.CREATED_ROOM, { gameID: id });
+		let publicGames = [];
+		for (const key in games) {
+			if (!games[key].isPrivate) {
+				const game = games[key];
+				publicGames.push({ gameName: game.name, key: key });
+			}
+		}
+		io.to('/').emit(EVENTS.GET_ROOMS, { games: publicGames });
 		console.log("CREATED GAME");
 	}
 
