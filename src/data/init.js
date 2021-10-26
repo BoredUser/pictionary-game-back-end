@@ -7,7 +7,7 @@ mongoose.set( 'runValidators', true );
 // mongoose.set( 'useFindAndModify', false );
 
 // mongodb is the name of the service
-if( process.env.NODE_ENVIRONMENT !== 'deployment' ) {
+if( process.env.NODE_ENVIRONMENT !== 'production' ) {
     console.log( 'Connecting to mongodb://localhost:27017/workshopsDB' );
     mongoose.connect( 'mongodb://localhost:27017/pictionaryGameDB' );
 } else {
