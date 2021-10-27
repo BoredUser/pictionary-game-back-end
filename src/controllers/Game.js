@@ -168,14 +168,14 @@ class Game {
 			socket.hasGuessed = true;
 		} else if (distance < 3 && currentWord !== "") {
 			io.in(socket.roomID).emit(events.MESSAGE, {
-				...data,
+				message: "Guessed it wrong",
 				name: socket.player.name,
 			});
 			if (games[socket.roomID].drawer !== socket.id && !socket.hasGuessed)
-				socket.emit("closeGuess", { message: "That was very close!" });
+				socket.emit(events.CLOSE_GUESS, { message: "That was very close!" });
 		} else {
 			io.in(socket.roomID).emit(events.MESSAGE, {
-				...data,
+				message: "Guessed it wrong",
 				name: socket.player.name,
 			});
 		}
