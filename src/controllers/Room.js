@@ -102,7 +102,7 @@ class Room {
 	}
 
 	getPublicRooms(data) {
-		const { io } = this;
+		const { io, socket } = this;
 		let publicGames = [];
 		for (const key in games) {
 			if (!games[key].isPrivate && !games[key].hasStarted) {
@@ -110,7 +110,8 @@ class Room {
 				publicGames.push({ gameName: game.name, key: key });
 			}
 		}
-		io.to(data.id).emit(EVENTS.GET_ROOMS, { games: publicGames });
+		console.log("getRoom")
+		io.to(socket.id).emit(EVENTS.GET_ROOMS, { games: publicGames });
 	}
 
 	setCustomId(data) {
