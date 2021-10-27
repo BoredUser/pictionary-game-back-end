@@ -52,19 +52,17 @@ class Game {
 		console.log("Startgame Players: ", players);
 		console.log("___________________________");
 		socket.to(socket.roomID).emit(events.START_GAME);
+		games[socket.roomID].hasStarted = true;
 		for (let j = 0; j < rounds; j++) {
 			/* eslint-disable no-await-in-loop */
 			for (let i = 0; i < players.length; i++) {
+				
 				await this.giveTurnTo(players, i);
 			}
 		}
-		io.to(socket.id).emit(EVENTS.GET_SCORE, {
+		io.to(socket.roomID).emit(events.END_GAME, {
+			roomID: socket.roomID,
 			scores: games[socket.roomID]["Players"],
-		});
-		sleep(3000).then(() => {
-			io.to(socket.roomID).emit(events.END_GAME, {
-				stats: games[socket.roomID],
-			});
 		});
 
 		delete games[socket.roomID];

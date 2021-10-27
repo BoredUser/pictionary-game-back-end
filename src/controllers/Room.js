@@ -33,39 +33,67 @@ class Room {
 				publicGames.push({ gameName: game.name, key: key });
 			}
 		}
-		io.of('/').emit(EVENTS.GET_ROOMS, { games: publicGames });
+		io.of("/").emit(EVENTS.GET_ROOMS, { games: publicGames });
 		console.log("CREATED GAME");
 	}
 
 	async joinRoom(data) {
-		const { io, socket } = this;
 		const roomID = data.id;
+		const { io, socket } = this;
 		const players = Array.from(await io.in(roomID).allSockets());
-		games[roomID]["Players"][data.player.id] = {};
-		games[roomID]["Players"][data.player.id].score = 0;
-		games[roomID]["Players"][data.player.id].name = data.player.name;
-		socket.player = data.player;
-		socket.join(roomID);
-		socket.roomID = roomID;
-		socket.to(roomID).emit(EVENTS.JOIN_ROOM, data.player);
-		socket.to(roomID).emit(
-			EVENTS.PLAYER_JOIN,
-			players.reduce((acc, id) => {
-				if (socket.id !== id) {
-					const { player } = io.of("/").sockets.get(id);
-					acc.push(player);
-				}
-				return acc;
-			}, [])
-		);
-		console.log("JOINED GAME");
+			games[roomID]["Players"][data.player.id] = {};
+			games[roomID]["Players"][data.player.id].score = 0;
+			games[roomID]["Players"][data.player.id].name = data.player.name;
+			socket.player = data.player;
+			socket.join(roomID);
+			socket.roomID = roomID;
+			socket.to(roomID).emit(EVENTS.JOIN_ROOM, data.player);
+			socket.to(roomID).emit(
+				EVENTS.PLAYER_JOIN,
+				players.reduce((acc, id) => {
+					if (socket.id !== id) {
+						const { player } = io.of("/").sockets.get(id);
+						acc.push(player);
+					}
+					return acc;
+				}, [])
+			);
+			console.log("JOINED GAME");
+	}
+
+	async joinPrivateRoom(data) {
+		const { io, socket } = this;
+		const roomId = data.Id;
+		const arr = Array.from(io.sockets.adapter.rooms);
+
+		const filtered = arr.filter((room) => !room[1].has(room[0]));
+
+		const res = filtered.map((i) => JSON.stringify(i[0]));
+		console.log(JSON.stringify(roomId));
+
+		if (res.indexOf(String(roomId))) {
+			io.to(socket.id).emit(EVENTS.JOIN_PRIVATE_ROOM, {
+				isAvailable: true,
+			});
+			console.log(true);
+		} else {
+			io.to(socket.id).emit(EVENTS.JOIN_PRIVATE_ROOM, {
+				isAvailable: false,
+			});
+			console.log(false);
+		}
+		console.log("Rooms: ", res);
+		console.log("RoomId: ", roomId);
 	}
 
 	getRoomPlayers(data) {
 		const { io, socket } = this;
 		if (games[data.id] !== undefined) {
-            console.log(games[data.id]);
-			io.to(data.id).emit(EVENTS.GET_ROOM_PLAYERS, { players: games[data.id]["Players"] , creator:  games[data.id]["creator"]});
+			console.log(games[data.id]);
+			io.to(data.id).emit(EVENTS.GET_ROOM_PLAYERS, {
+				players: games[data.id]["Players"],
+				creator: games[data.id]["creator"],
+			});
 			// socket
 			// 	.to(data.id)
 			// 	.emit(EVENTS.GET_ROOM_PLAYERS, games[data.id]["Players"]);
@@ -77,7 +105,7 @@ class Room {
 		const { io } = this;
 		let publicGames = [];
 		for (const key in games) {
-			if (!games[key].isPrivate) {
+			if (!games[key].isPrivate && !games[key].hasStarted) {
 				const game = games[key];
 				publicGames.push({ gameName: game.name, key: key });
 			}
@@ -86,25 +114,24 @@ class Room {
 	}
 
 	setCustomId(data) {
-        const { socket } = this;
+		const { socket } = this;
 		customSocketIds[data.customId] = data.id;
 		for (const key in games) {
-            // console.log("_______________________________");
-            // console.log("games :", games[key]);
-            
+			// console.log("_______________________________");
+			// console.log("games :", games[key]);
+
 			for (const player in games[key]["Players"]) {
-            
 				if (player == data.customId) {
 					socket.roomID = key;
 					socket.join(key);
-                    // console.log("match");
+					// console.log("match");
 				}
 			}
 		}
-        // console.log("_______________________________");
-        // console.log(new Date());
+		// console.log("_______________________________");
+		// console.log(new Date());
 		// console.log("joinedPlayers: ", customSocketIds);
-        // console.log("_______________________________");
+		// console.log("_______________________________");
 	}
 }
 
